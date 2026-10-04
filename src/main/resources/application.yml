@@ -1,0 +1,57 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: campus-market
+
+  # ===== MySQL 数据库连接 =====
+  # 先双击 D:\mysql\启动MySQL.bat 把数据库跑起来。
+  # 第 3 关才会真正建库建表，在此之前只要不执行 SQL，MySQL 没开也能启动。
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/campus_market?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+
+  # 启动时自动执行 schema.sql（建表）和 data.sql（灌数据）
+  # 注意：schema.sql 里有 DROP TABLE，所以每次重启数据会重置成初始 10 条。
+  # 想让数据一直保留，把下面的 always 改成 never 即可。
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+      encoding: UTF-8
+      continue-on-error: false
+
+  # ===== Redis 缓存（第 7 关）=====
+  # 先把 Redis 跑起来（6379 端口）。改成 cache.type=none 时 RedisConfig 不生效，
+  # 即使没装 Redis 项目也能正常启动（缓存功能自动降级为直接查库）。
+  cache:
+    type: redis
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: 2000ms
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.lzit.campus.entity
+  configuration:
+    # 下划线字段自动转驼峰属性（created_at -> createdAt）
+    map-underscore-to-camel-case: true
+    # 控制台打印 SQL，方便学习和调试（上线前可以关掉）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.lzit.campus: debug

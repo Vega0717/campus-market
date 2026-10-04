@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lzit.campus.mapper.ItemMapper">
+
+    <sql id="Base_Column">
+        id, title, description, price, category, seller, contact, status, created_at, updated_at
+    </sql>
+
+    <!-- 公共查询条件：关键词和状态都是可选的 -->
+    <sql id="Condition">
+        <where>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (title LIKE CONCAT('%', #{keyword}, '%')
+                OR description LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPage" resultType="com.lzit.campus.entity.Item">
+        SELECT
+        <include refid="Base_Column"/>
+        FROM item
+        <include refid="Condition"/>
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countByCondition" resultType="long">
+        SELECT COUNT(*) FROM item
+        <include refid="Condition"/>
+    </select>
+
+    <select id="selectById" resultType="com.lzit.campus.entity.Item">
+        SELECT
+        <include refid="Base_Column"/>
+        FROM item
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO item (title, description, price, category, seller, contact, status, created_at, updated_at)
+        VALUES (#{title}, #{description}, #{price}, #{category}, #{seller}, #{contact},
+                COALESCE(#{status}, 0), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="update">
+        UPDATE item
+        SET title = #{title},
+            description = #{description},
+            price = #{price},
+            category = #{category},
+            seller = #{seller},
+            contact = #{contact},
+            status = #{status},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE item
+        SET status = #{status}, updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM item WHERE id = #{id}
+    </delete>
+
+</mapper>

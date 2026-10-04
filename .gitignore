@@ -1,0 +1,33 @@
+# ===== Java / Maven =====
+target/
+build/
+*.class
+
+# ===== Node =====
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===== IDE =====
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+!.vscode/extensions.json
+.settings/
+.project
+.classpath
+
+# ===== 系统 =====
+.DS_Store
+Thumbs.db
+
+# ===== 本地脚本 / 日志 =====
+打包后端.bat
+logs/
+*.log
